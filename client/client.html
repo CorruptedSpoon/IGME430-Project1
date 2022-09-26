@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Our simple HTTP server</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  
+  <script>
+    const statusStruct = {
+      200: 'Success',
+      201: 'Created',
+      204: 'Updated (no content)',
+      400: 'Bad Request',
+      404: 'Not Found'
+    }
+    
+    const handleResponse = async (res, method) => {
+      const content = document.getElementById('content');
+      let responseHTML = '';
+
+      if(method === 'get' || method === 'post' && res.status !== 204){
+        const json = await res.json();
+        if(json['users']){
+          responseHTML = `<p>${JSON.stringify(json['users'])}</p>`;
+        } else{
+          responseHTML = `<p>message: ${json['message']}</p>`;
+        }
+      }   responseHTML = `<h1>${statusStruct[res.status]}</h1>` + responseHTML;
+
+      content.innerHTML = responseHTML;
+    }
+
+    const sendFetch = async (url, method) => {
+      const options = {
+        method,
+        headers: {
+          'Accept': 'application/json'
+        }
+      }
+
+      const res = await fetch(url, options);
+      handleResponse(res, method);
+    };
+
+    const sendPost = async (url, nameForm) => {
+      const nameField  = nameForm.querySelector('#nameField');
+      const ageField  = nameForm.querySelector('#ageField');
+
+      const formData = `name=${nameField.value}&age=${ageField.value}`;
+
+      let res = await fetch(url, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: formData
+      });
+
+      handleResponse(res, 'post');
+    };
+
+    const init = () => {
+      const userForm = document.getElementById('userForm');
+      const urlField = document.getElementById('urlField');
+      const methodSelect = document.getElementById('methodSelect');
+      const nameForm = document.getElementById('nameForm');
+      
+      userForm.addEventListener('submit', (event) => {
+        sendFetch(urlField.value, methodSelect.value);
+        event.preventDefault();
+      });
+
+      nameForm.addEventListener('submit', (event) => {
+        sendPost(nameForm.getAttribute('action'), nameForm);
+        event.preventDefault();
+      });
+    };
+
+    window.onload = init;
+  </script>
+</head>
+<body>
+  <section id="top">
+    <h3>POST Status Code Tests</h3>
+    <form id="nameForm" action="/addUser" method="post">
+      <label for="name">Name: </label>
+      <input id="nameField" type="text" name="name" />
+      <label for="age">Age: </label>
+      <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
+      <input type="submit" value="Add User" />
+    </form>
+    <form id="userForm" action="/getUsers" method="get">
+      <select id='urlField'>
+        <option value='/getUsers'>/getUsers</option>
+        <option value='/notReal'>/notReal</option>
+      </select>
+      <select id="methodSelect">
+        <option value="get">GET</option>
+        <option value="head">HEAD</option>
+      </select>
+      <input type="submit" value="Get User" />
+    </form>
+  </section>
+  <section id="content">
+  </section>
+</body>
+</html>
