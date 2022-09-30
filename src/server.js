@@ -3,6 +3,7 @@ const url = require('url');
 const query = require('querystring');
 const jsonHandler = require('./jsonHandler');
 const htmlHandler = require('./htmlHandler');
+const lobbyHandler = require('./lobbyHandler');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -40,6 +41,7 @@ const urlStruct = {
     '/notReal': jsonHandler.notFoundMeta,
   },
   POST: {
+    '/createLobby': (req, res) => parseBody(req, res, lobbyHandler.createLobby),
     '/addUser': (req, res) => parseBody(req, res, jsonHandler.addUser),
   },
 };
@@ -51,6 +53,7 @@ const onRequest = (req, res) => {
   if (handler) {
     handler(req, res);
   } else {
+    console.log(`${req.method} ${parsedUrl.pathname}`);
     urlStruct[req.method].notFound(req, res);
   }
 };
