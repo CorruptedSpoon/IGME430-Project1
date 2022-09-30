@@ -34,3 +34,8 @@ handler.js
 
     get and post handlers for everything above
     updateScore handler checks if there is a winner, ends game
+
+
+
+
+best way to load the game page with url query string?

@@ -41,6 +41,16 @@ const createLobby = (req, res, body) => {
   return respondJSONMeta(res, 201);
 };
 
+const getLobbys = (req, res) => {
+  const responseJson = {lobbys: []};
+
+  for(const key in lobbys){
+    responseJson.lobbys.push(lobbys[key].name);
+  }
+  return respondJSON(res, 200, responseJson);
+};
+
 module.exports = {
   createLobby,
+  getLobbys
 };

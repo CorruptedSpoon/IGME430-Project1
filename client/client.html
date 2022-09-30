@@ -12,7 +12,19 @@
       400: 'Bad Request',
     };
 
-    const handleResPost = async (res) => {
+    const handleResGet = async (res) => {
+      const lobbySelect = document.querySelector('#joinLobby');
+      
+      const json = await res.json();
+      const lobbys = json['lobbys'];
+      let selectHTML = '';
+      for(let i = 0; i < lobbys.length; i++) {
+        selectHTML += `<option value="${lobbys[i]}">${lobbys[i]}</option>`;
+      }
+      lobbySelect.innerHTML = selectHTML;
+    };
+
+    const handleResPost = async (res, name) => {
       const content = document.querySelector('#content');
 
       if (res.status === 400) {
@@ -21,7 +33,19 @@
         responseHTML += `<p>${json.message}</p>`;
         content.innerHTML = responseHTML;
         return;
-      } window.location.href = './game.html';
+      } 
+      sendGet('/getLobbys');
+      window.location.href = `./game?name=${name}`;
+    };
+
+    const sendGet = async (url) => {
+      const res = await fetch(url, {
+        method: 'get',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      handleResGet(res);
     };
 
     const sendPost = async (url, createLobby) => {
@@ -40,16 +64,23 @@
         body: formData,
       });
 
-      handleResPost(res);
+      handleResPost(res, nameField.value);
     };
 
     const init = () => {
       const createLobby = document.querySelector('#createLobby');
+      const refreshButton = document.querySelector('#refreshButton');
 
       createLobby.addEventListener('submit', (event) => {
         sendPost('/createLobby', createLobby);
         event.preventDefault();
       });
+
+      refreshButton.addEventListener('click', () => {
+        sendGet('/getLobbys');
+      });
+
+      sendGet('/getLobbys');
     };
 
     window.onload = init;
@@ -58,20 +89,22 @@
 </head>
 <body>
     <section id="top">
-        <form id="createLobby" method="post">
-            <label for="name">Lobby Name: </label>
-            <input id = "nameField" type="text" name="name" />
-            <label for="team1">Team 1: </label>
-            <input id = "team1Field" type="text" name="team1" />
-            <label for="team2">Team 2: </label>
-            <input id = "team2Field" type="text" name="team2" />
-            <input type="submit" value="Create Lobby"/>
-        </form>
-        <br>
-        <select id="joinLobby">
-        </select>
+      <h3>Create Lobby</h3>
+      <form id="createLobby" method="post">
+          <label for="name">Lobby Name: </label>
+          <input id = "nameField" type="text" name="name" />
+          <label for="team1">Team 1: </label>
+          <input id = "team1Field" type="text" name="team1" />
+          <label for="team2">Team 2: </label>
+          <input id = "team2Field" type="text" name="team2" />
+          <input type="submit" value="Create"/>
+      </form>
+      <br>
+      <h3>Join Lobby</h3>
+      <select id="joinLobby"></select>
+      <button id="refreshButton" type="button">Refresh</button>
     </section>
-    <section id="content">
+      <section id="content">
     </section>
 </body>
 </html>

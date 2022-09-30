@@ -32,26 +32,23 @@ const urlStruct = {
   GET: {
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
-    '/getUsers': jsonHandler.getUsers,
-    '/notReal': jsonHandler.notFound,
+    '/getLobbys': lobbyHandler.getLobbys,
     notFound: jsonHandler.notFound,
   },
   HEAD: {
-    '/getUsers': jsonHandler.getUsersMeta,
-    '/notReal': jsonHandler.notFoundMeta,
   },
   POST: {
     '/createLobby': (req, res) => parseBody(req, res, lobbyHandler.createLobby),
-    '/addUser': (req, res) => parseBody(req, res, jsonHandler.addUser),
   },
 };
 
 const onRequest = (req, res) => {
   const parsedUrl = url.parse(req.url);
+  const params = query.parse(parsedUrl.query);
 
   const handler = urlStruct[req.method][parsedUrl.pathname];
   if (handler) {
-    handler(req, res);
+    handler(req, res, params);
   } else {
     console.log(`${req.method} ${parsedUrl.pathname}`);
     urlStruct[req.method].notFound(req, res);
