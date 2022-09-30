@@ -34,7 +34,7 @@
         content.innerHTML = responseHTML;
         return;
       } 
-      sendGet('/getLobbys');
+      sendGet('/getLobbyNames');
       window.location.href = `./game?name=${name}`;
     };
 
@@ -70,17 +70,21 @@
     const init = () => {
       const createLobby = document.querySelector('#createLobby');
       const refreshButton = document.querySelector('#refreshButton');
+      const lobbySelect = document.querySelector('#joinLobby');
+      const joinButton = document.querySelector('#joinButton');
 
       createLobby.addEventListener('submit', (event) => {
         sendPost('/createLobby', createLobby);
         event.preventDefault();
       });
-
       refreshButton.addEventListener('click', () => {
-        sendGet('/getLobbys');
+        sendGet('/getLobbyNames');
+      });
+      joinButton.addEventListener('click', () => {
+        window.location.href = `./game?name=${lobbySelect.value}`;
       });
 
-      sendGet('/getLobbys');
+      sendGet('/getLobbyNames');
     };
 
     window.onload = init;
@@ -103,6 +107,7 @@
       <h3>Join Lobby</h3>
       <select id="joinLobby"></select>
       <button id="refreshButton" type="button">Refresh</button>
+      <button id="joinButton" type="button">Join</button>
     </section>
       <section id="content">
     </section>

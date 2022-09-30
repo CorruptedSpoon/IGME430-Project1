@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>game</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+  <!-- <script src="./game.js"></script> -->
+
+  <script>
+    const statusStruct = {
+      200: 'Success',
+      201: 'Created',
+      400: 'Bad Request',
+    };
+
+    const handleResGet = async (res) => {
+      const content = document.querySelector('#content');      
+      const json = await res.json();
+
+      content.innerHTML = JSON.stringify(json);
+    };
+
+    const sendGet = async (url) => {
+      const res = await fetch(url, {
+        method: 'get',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      handleResGet(res);
+    };
+
+    const init = () => {
+        const url = window.location.href;
+        const lobbyName = url.split('=')[1];
+
+        sendGet(`/getLobby?name=${lobbyName}`);
+    };
+
+    window.onload = init;
+  </script>
+  
+</head>
+<body>
+    <section id="top">
+      <h1>Game</h1>
+    </section>
+    <section id="content">
+    </section>
+</body>
+</html>

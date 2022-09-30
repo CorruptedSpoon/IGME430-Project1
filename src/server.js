@@ -32,7 +32,9 @@ const urlStruct = {
   GET: {
     '/': htmlHandler.getIndex,
     '/style.css': htmlHandler.getCSS,
-    '/getLobbys': lobbyHandler.getLobbys,
+    '/getLobby': lobbyHandler.getLobby,
+    '/getLobbyNames': lobbyHandler.getLobbyNames,
+    '/game': htmlHandler.getGame,
     notFound: jsonHandler.notFound,
   },
   HEAD: {

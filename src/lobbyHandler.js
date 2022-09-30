@@ -41,7 +41,7 @@ const createLobby = (req, res, body) => {
   return respondJSONMeta(res, 201);
 };
 
-const getLobbys = (req, res) => {
+const getLobbyNames = (req, res) => {
   const responseJson = {lobbys: []};
 
   for(const key in lobbys){
@@ -50,7 +50,17 @@ const getLobbys = (req, res) => {
   return respondJSON(res, 200, responseJson);
 };
 
+const getLobby = (req, res, params) => {
+  const responseJson = {};
+  if(!lobbys[params.name]){
+    responseJson.message = 'lobby does not exist';
+    responseJson.id = 'lobbyNotFound';
+    return respondJSON(res, 400, responseJSON);
+  } return respondJSON(res, 200, lobbys[params.name]);
+};
+
 module.exports = {
   createLobby,
-  getLobbys
+  getLobby,
+  getLobbyNames
 };
