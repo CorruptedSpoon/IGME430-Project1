@@ -44,17 +44,18 @@ const createLobby = (req, res, body) => {
 };
 
 const getLobbyNames = (req, res) => {
-  const responseJson = {lobbys: []};
+  const responseJson = { lobbys: [] };
+  const keys = Object.keys(lobbys);
 
-  for(const key in lobbys){
-    responseJson.lobbys.push(lobbys[key].name);
+  for (let i = 0; i < keys.length; i++) {
+    responseJson.lobbys.push(lobbys[keys[i]].name);
   }
   return respondJSON(res, 200, responseJson);
 };
 
 const getLobby = (req, res, params) => {
   const responseJson = {};
-  if(!lobbys[params.name]){
+  if (!lobbys[params.name]) {
     responseJson.message = 'lobby does not exist';
     responseJson.id = 'lobbyNotFound';
     return respondJSON(res, 400, responseJson);
@@ -63,12 +64,12 @@ const getLobby = (req, res, params) => {
 
 const updateLobby = (req, res, params) => {
   console.log(params.team);
-  if(params.team === '1'){
+  if (params.team === '1') {
     lobbys[params.name].score += scoreCounterNum;
   } else {
-    lobbys[params.name].score -= scoreCounterNum
+    lobbys[params.name].score -= scoreCounterNum;
   } return respondJSONMeta(res, 200);
-}
+};
 
 module.exports = {
   createLobby,
