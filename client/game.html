@@ -10,6 +10,7 @@
     let lobbyObj = {};
     let team = 0;
     let running = true;
+    let interval = null;
 
     const statusStruct = {
       200: 'Success',
@@ -17,13 +18,27 @@
       400: 'Bad Request',
     };
 
-    const displayJson = (json) => {
-      content.innerHTML = JSON.stringify(json);
+    const display = () => {
+      let displayHtml = '';
+      if(lobbyObj.score >= 1){
+        displayHtml = 'Team 1 wins!';
+      } else if(lobbyObj.score <= -1){
+        displayHtml = 'Team 2 wins!';
+      } else {
+        displayHtml = '<h3>score (100 or -100 wins)</h3>';
+        displayHtml += `${Math.floor(lobbyObj.score * 100)}`;
+      }
+      
+      content.innerHTML = displayHtml;
     };
 
     const updateLobbyObj = (json) => {
       lobbyObj = json;
-      displayJson(json);
+      if(lobbyObj.score >= 1 || lobbyObj.score <= -1){
+        clearInterval(interval);
+        running = false;
+      }
+      display();
     };
 
     const initGame = (json) => {
@@ -37,7 +52,7 @@
       joinTeam.innerHTML = selectHTML;
 
       const update = () => sendGetJson(`/getLobby?name=${lobbyObj.name}`, updateLobbyObj);
-      setInterval(update, 500);
+      interval = setInterval(update, 500);
     };
 
     const handleGetJson = async (res, handler) => {
@@ -70,7 +85,7 @@
     };
 
     const handleInput = (e) => {
-      if(team !== 0){
+      if(team !== 0 && running){
         const key = e.keyCode;
         console.log(key);
 
@@ -89,6 +104,7 @@
     const init = () => {
       const joinButton = document.querySelector('#joinButton');
       const joinTeam = document.querySelector('#joinTeam');
+      const joinText = document.querySelector('#joinText');
       const url = window.location.href;
       const lobbyName = url.split('=')[1];
 
@@ -96,6 +112,9 @@
       
       joinButton.addEventListener('click', () => {
         setTeam(joinTeam.value);
+        joinButton.parentNode.removeChild(joinButton);
+        joinTeam.parentNode.removeChild(joinTeam);
+        joinText.parentNode.removeChild(joinText);
       });
 
       document.onkeydown = handleInput;
@@ -109,7 +128,7 @@
     <section id="top">
       <h1>Game</h1>
       <br>
-      <h3>Join Team</h3>
+      <h3 id="joinText">Join Team</h3>
       <select id="joinTeam"></select>
       <button id="joinButton" type="button">Join</button>
     </section>
