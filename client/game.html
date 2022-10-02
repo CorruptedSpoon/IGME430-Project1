@@ -6,34 +6,99 @@
   <!-- <script src="./game.js"></script> -->
 
   <script>
+    // holds the state data of the game lobby
+    let lobbyObj = {};
+    let team = 0;
+    let running = true;
+
     const statusStruct = {
       200: 'Success',
       201: 'Created',
       400: 'Bad Request',
     };
 
-    const handleResGet = async (res) => {
-      const content = document.querySelector('#content');      
-      const json = await res.json();
-
+    const displayJson = (json) => {
       content.innerHTML = JSON.stringify(json);
     };
 
-    const sendGet = async (url) => {
+    const updateLobbyObj = (json) => {
+      lobbyObj = json;
+      displayJson(json);
+    };
+
+    const initGame = (json) => {
+      updateLobbyObj(json);
+
+      const joinTeam = document.querySelector('#joinTeam');
+      let selectHTML = '';
+      const createOption = (team) => `<option value="${team}">${team}</option>`;
+      selectHTML += createOption(lobbyObj.team1);
+      selectHTML += createOption(lobbyObj.team2);
+      joinTeam.innerHTML = selectHTML;
+
+      const update = () => sendGetJson(`/getLobby?name=${lobbyObj.name}`, updateLobbyObj);
+      setInterval(update, 500);
+    };
+
+    const handleGetJson = async (res, handler) => {
+      const content = document.querySelector('#content');      
+      const json = await res.json();
+
+      handler(json);
+    };
+
+    const sendGetJson = async (url, jsonHandler) => {
       const res = await fetch(url, {
         method: 'get',
         headers: {
           Accept: 'application/json',
         },
       });
-      handleResGet(res);
+      handleGetJson(res, jsonHandler);
     };
 
-    const init = () => {
-        const url = window.location.href;
-        const lobbyName = url.split('=')[1];
+    const sendPost = async (url) => {
+      const formData = `name=${lobbyObj.name}&team=${team}`;
+      
+      await fetch(url, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData,
+      });
+    };
 
-        sendGet(`/getLobby?name=${lobbyName}`);
+    const handleInput = (e) => {
+      if(team !== 0){
+        const key = e.keyCode;
+        console.log(key);
+
+        if(key === 32){
+          console.log('sending post');
+          sendPost('/updateLobby');
+        }
+      }
+    };
+
+    const setTeam = (teamName) => {
+      if(lobbyObj.team1 === teamName) team = 1;
+      else team = 2;
+    }
+
+    const init = () => {
+      const joinButton = document.querySelector('#joinButton');
+      const joinTeam = document.querySelector('#joinTeam');
+      const url = window.location.href;
+      const lobbyName = url.split('=')[1];
+
+      sendGetJson(`/getLobby?name=${lobbyName}`, initGame);
+      
+      joinButton.addEventListener('click', () => {
+        setTeam(joinTeam.value);
+      });
+
+      document.onkeydown = handleInput;
     };
 
     window.onload = init;
@@ -43,6 +108,10 @@
 <body>
     <section id="top">
       <h1>Game</h1>
+      <br>
+      <h3>Join Team</h3>
+      <select id="joinTeam"></select>
+      <button id="joinButton" type="button">Join</button>
     </section>
     <section id="content">
     </section>

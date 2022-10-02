@@ -81,7 +81,9 @@
         sendGet('/getLobbyNames');
       });
       joinButton.addEventListener('click', () => {
-        window.location.href = `./game?name=${lobbySelect.value}`;
+        if(lobbySelect.value){
+          window.location.href = `./game?name=${lobbySelect.value}`;
+        }
       });
 
       sendGet('/getLobbyNames');

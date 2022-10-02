@@ -41,6 +41,7 @@ const urlStruct = {
   },
   POST: {
     '/createLobby': (req, res) => parseBody(req, res, lobbyHandler.createLobby),
+    '/updateLobby': (req, res) => parseBody(req, res, lobbyHandler.updateLobby),
   },
 };
 

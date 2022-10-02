@@ -2,6 +2,8 @@ const lobbys = {
 
 };
 
+const scoreCounterNum = 0.05;
+
 const respondJSON = (res, status, obj) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   res.write(JSON.stringify(obj));
@@ -55,12 +57,22 @@ const getLobby = (req, res, params) => {
   if(!lobbys[params.name]){
     responseJson.message = 'lobby does not exist';
     responseJson.id = 'lobbyNotFound';
-    return respondJSON(res, 400, responseJSON);
+    return respondJSON(res, 400, responseJson);
   } return respondJSON(res, 200, lobbys[params.name]);
 };
+
+const updateLobby = (req, res, params) => {
+  console.log(params.team);
+  if(params.team === '1'){
+    lobbys[params.name].score += scoreCounterNum;
+  } else {
+    lobbys[params.name].score -= scoreCounterNum
+  } return respondJSONMeta(res, 200);
+}
 
 module.exports = {
   createLobby,
   getLobby,
-  getLobbyNames
+  getLobbyNames,
+  updateLobby,
 };
