@@ -24,3 +24,8 @@ html, body {
 #content h3{
   font-size: .8em;
 }
+
+#instructions{
+  padding-top: 30px;
+  text-align: center;
+}
