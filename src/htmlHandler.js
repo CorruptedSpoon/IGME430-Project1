@@ -1,29 +1,36 @@
 const fs = require('fs');
+const helper = require('./helper.js');
 
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const game = fs.readFileSync(`${__dirname}/../client/game.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
+const clientJs = fs.readFileSync(`${__dirname}/../client/client.js`);
+const gameJs = fs.readFileSync(`${__dirname}/../client/game.js`);
 
-const getIndex = (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.write(index);
-  res.end();
+const getIndexHtml = (req, res) => {
+  helper.respond(res, 200, 'text/html', index);
 };
 
-const getGame = (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.write(game);
-  res.end();
+const getGameHtml = (req, res) => {
+  helper.respond(res, 200, 'text/html', game);
 };
 
 const getCSS = (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/css' });
-  res.write(css);
-  res.end();
+  helper.respond(res, 200, 'text/css', css);
+};
+
+const getClientJs = (req, res) => {
+  helper.respond(res, 200, 'text/javascript', clientJs);
+};
+
+const getGameJs = (req, res) => {
+  helper.respond(res, 200, 'text/javascript', gameJs);
 };
 
 module.exports = {
-  getIndex,
-  getGame,
+  getIndexHtml,
+  getGameHtml,
   getCSS,
+  getClientJs,
+  getGameJs,
 };

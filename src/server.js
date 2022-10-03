@@ -30,14 +30,14 @@ const parseBody = (req, res, handler) => {
 
 const urlStruct = {
   GET: {
-    '/': htmlHandler.getIndex,
+    '/': htmlHandler.getIndexHtml,
     '/style.css': htmlHandler.getCSS,
-    '/getLobby': lobbyHandler.getLobby,
+    '/getLobbyObj': lobbyHandler.getLobbyObj,
     '/getLobbyNames': lobbyHandler.getLobbyNames,
-    '/game': htmlHandler.getGame,
+    '/game': htmlHandler.getGameHtml,
+    '/client.js': htmlHandler.getClientJs,
+    '/game.js': htmlHandler.getGameJs,
     notFound: jsonHandler.notFound,
-  },
-  HEAD: {
   },
   POST: {
     '/createLobby': (req, res) => parseBody(req, res, lobbyHandler.createLobby),
