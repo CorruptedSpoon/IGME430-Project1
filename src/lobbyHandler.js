@@ -10,7 +10,7 @@ const addLobby = (params) => {
     team1: params.team1,
     team2: params.team2,
     score: 0,
-  }; 
+  };
   lobbys[params.name] = lobby;
 };
 

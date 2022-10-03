@@ -1,36 +1,53 @@
 // holds the state data of the game lobby
 let lobbyObj = {};
-let team = 0;
+let currentTeam = 0;
 let running = true;
 let interval = null;
 
-const statusStruct = {
-  200: 'Success',
-  201: 'Created',
-  400: 'Bad Request',
-};
+// const statusStruct = {
+//   200: 'Success',
+//   201: 'Created',
+//   400: 'Bad Request',
+// };
 
 const display = () => {
+  const content = document.querySelector('#content');
   let displayHtml = '';
-  if(lobbyObj.score >= 1){
+  if (lobbyObj.score >= 1) {
     displayHtml = 'Team 1 wins!';
-  } else if(lobbyObj.score <= -1){
+  } else if (lobbyObj.score <= -1) {
     displayHtml = 'Team 2 wins!';
   } else {
     displayHtml = '<h3>score (100 or -100 wins)</h3>';
     displayHtml += `${Math.floor(lobbyObj.score * 100)}`;
   }
-  
+
   content.innerHTML = displayHtml;
 };
 
 const updateLobbyObj = (json) => {
   lobbyObj = json;
-  if(lobbyObj.score >= 1 || lobbyObj.score <= -1){
+  if (lobbyObj.score >= 1 || lobbyObj.score <= -1) {
     clearInterval(interval);
     running = false;
   }
   display();
+};
+
+const handleGetJson = async (res, handler) => {
+  const json = await res.json();
+
+  handler(json);
+};
+
+const sendGetJson = async (url, jsonHandler) => {
+  const res = await fetch(url, {
+    method: 'get',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  handleGetJson(res, jsonHandler);
 };
 
 const initGame = (json) => {
@@ -47,26 +64,9 @@ const initGame = (json) => {
   interval = setInterval(update, 500);
 };
 
-const handleGetJson = async (res, handler) => {
-  const content = document.querySelector('#content');
-  const json = await res.json();
-
-  handler(json);
-};
-
-const sendGetJson = async (url, jsonHandler) => {
-  const res = await fetch(url, {
-    method: 'get',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-  handleGetJson(res, jsonHandler);
-};
-
 const sendPost = async (url) => {
-  const formData = `name=${lobbyObj.name}&team=${team}`;
-  
+  const formData = `name=${lobbyObj.name}&team=${currentTeam}`;
+
   await fetch(url, {
     method: 'post',
     headers: {
@@ -77,11 +77,11 @@ const sendPost = async (url) => {
 };
 
 const handleInput = (e) => {
-  if(team !== 0 && running){
+  if (currentTeam !== 0 && running) {
     const key = e.keyCode;
     console.log(key);
 
-    if(key === 32){
+    if (key === 32) {
       console.log('sending post');
       sendPost('/updateLobby');
     }
@@ -89,9 +89,9 @@ const handleInput = (e) => {
 };
 
 const setTeam = (teamName) => {
-  if(lobbyObj.team1 === teamName) team = 1;
-  else team = 2;
-}
+  if (lobbyObj.team1 === teamName) currentTeam = 1;
+  else currentTeam = 2;
+};
 
 const init = () => {
   const joinButton = document.querySelector('#joinButton');
@@ -101,7 +101,7 @@ const init = () => {
   const lobbyName = url.split('=')[1];
 
   sendGetJson(`/getLobbyObj?name=${lobbyName}`, initGame);
-  
+
   joinButton.addEventListener('click', () => {
     setTeam(joinTeam.value);
     joinButton.parentNode.removeChild(joinButton);
