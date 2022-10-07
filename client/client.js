@@ -4,30 +4,49 @@ const statusStruct = {
   400: 'Bad Request',
 };
 
-const handleResGet = async (res) => {
-  const lobbySelect = document.querySelector('#joinLobby');
-
-  const json = await res.json();
-  const { lobbys } = json;
-  let selectHTML = '';
-  for (let i = 0; i < lobbys.length; i++) {
-    selectHTML += `<option value="${lobbys[i]}">${lobbys[i]}</option>`;
-  }
-  lobbySelect.innerHTML = selectHTML;
-};
-
 const sendGet = async (url) => {
   const res = await fetch(url, {
     method: 'get',
     headers: {
-      Accept: 'application/json',
+      'Accept': 'application/json',
     },
   });
-  handleResGet(res);
+  return res;
 };
 
-const handleResPost = async (res, name) => {
-  const content = document.querySelector('#content');
+const sendPost = async (url, contentType, body) => {
+  const res = await fetch(url, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': contentType,
+    },
+    body: body,
+  });
+  return res;
+};
+
+const updateLobbys = async () => {
+  const res = await sendGet('/getLobbyNames');
+  const json = await res.json();
+  const lobbys = json.lobbys;
+
+  let selectHtml = '';
+  for(let i = 0; i < lobbys.length; i++){
+    selectHtml += `<option value="${lobbys[i]}">${lobbys[i]}</option>`;
+  }
+  const lobbySelect = document.querySelector('#joinLobby');
+  lobbySelect.innerHTML = selectHtml;
+};
+
+const createLobby = async (createForm) => {
+  const nameField = createForm.querySelector('#nameField');
+  const team1Field = createForm.querySelector('#team1Field');
+  const team2Field = createForm.querySelector('#team2Field');
+  const formData = `name=${nameField.value}&team1=${team1Field.value}&team2=${team2Field.value}`;
+
+  const contentType = 'application/x-www-form-urlencoded';
+  const res = await sendPost('/createLobby', contentType, formData);
 
   if (res.status === 400) {
     const json = await res.json();
@@ -35,42 +54,22 @@ const handleResPost = async (res, name) => {
     responseHTML += `<p>${json.message}</p>`;
     content.innerHTML = responseHTML;
     return;
-  }
-  sendGet('/getLobbyNames');
-  window.location.href = `./game?name=${name}`;
-};
-
-const sendPost = async (url, createLobby) => {
-  const nameField = createLobby.querySelector('#nameField');
-  const team1Field = createLobby.querySelector('#team1Field');
-  const team2Field = createLobby.querySelector('#team2Field');
-
-  const formData = `name=${nameField.value}&team1=${team1Field.value}&team2=${team2Field.value}`;
-
-  const res = await fetch(url, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-    },
-    body: formData,
-  });
-
-  handleResPost(res, nameField.value);
+  } 
+  window.location.href = `./game?name=${nameField.value}`;
 };
 
 const init = () => {
-  const createLobby = document.querySelector('#createLobby');
+  const createForm = document.querySelector('#createLobby');
   const refreshButton = document.querySelector('#refreshButton');
   const lobbySelect = document.querySelector('#joinLobby');
   const joinButton = document.querySelector('#joinButton');
 
-  createLobby.addEventListener('submit', (event) => {
-    sendPost('/createLobby', createLobby);
+  createForm.addEventListener('submit', (event) => {
+    createLobby(createForm);
     event.preventDefault();
   });
   refreshButton.addEventListener('click', () => {
-    sendGet('/getLobbyNames');
+    updateLobbys();
   });
   joinButton.addEventListener('click', () => {
     if (lobbySelect.value) {
@@ -78,7 +77,7 @@ const init = () => {
     }
   });
 
-  sendGet('/getLobbyNames');
+  updateLobbys();
 };
 
 window.onload = init;

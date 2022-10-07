@@ -52,7 +52,6 @@ const getLobbyObj = (req, res, params) => {
 };
 
 const updateLobby = (req, res, params) => {
-  console.log(params.team);
   if (params.team === '1') {
     lobbys[params.name].score += scoreCounterNum;
   } else {

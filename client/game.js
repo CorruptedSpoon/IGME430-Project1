@@ -2,13 +2,35 @@
 let lobbyObj = {};
 let currentTeam = 0;
 let running = true;
-let interval = null;
+let updateInterval = null;
 
 // const statusStruct = {
 //   200: 'Success',
 //   201: 'Created',
 //   400: 'Bad Request',
 // };
+
+const sendGet = async (url) => {
+  const res = await fetch(url, {
+    method: 'get',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return res;
+};
+
+const sendPost = async (url, contentType, body) => {
+  const res = await fetch(url, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': contentType,
+    },
+    body: body,
+  });
+  return res;
+};
 
 const display = () => {
   const content = document.querySelector('#content');
@@ -25,33 +47,29 @@ const display = () => {
   content.innerHTML = displayHtml;
 };
 
-const updateLobbyObj = (json) => {
-  lobbyObj = json;
+const checkForWin = () => {
   if (lobbyObj.score >= 1 || lobbyObj.score <= -1) {
-    clearInterval(interval);
+    clearInterval(updateInterval);
     running = false;
   }
+};
+
+const update = async () => {
+  const res = await sendGet(`/getLobbyObj?name=${lobbyObj.name}`);
+  const json = await res.json();
+
+  lobbyObj = json;
+
+  checkForWin();
   display();
 };
 
-const handleGetJson = async (res, handler) => {
-  const json = await res.json();
+const initGame = async () => {
+  const url = window.location.href;
+  lobbyObj.name = url.split('=')[1];
 
-  handler(json);
-};
-
-const sendGetJson = async (url, jsonHandler) => {
-  const res = await fetch(url, {
-    method: 'get',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-  handleGetJson(res, jsonHandler);
-};
-
-const initGame = (json) => {
-  updateLobbyObj(json);
+  await update();
+  updateInterval = setInterval(update, 100);
 
   const joinTeam = document.querySelector('#joinTeam');
   let selectHTML = '';
@@ -59,31 +77,16 @@ const initGame = (json) => {
   selectHTML += createOption(lobbyObj.team1);
   selectHTML += createOption(lobbyObj.team2);
   joinTeam.innerHTML = selectHTML;
-
-  const update = () => sendGetJson(`/getLobbyObj?name=${lobbyObj.name}`, updateLobbyObj);
-  interval = setInterval(update, 500);
-};
-
-const sendPost = async (url) => {
-  const formData = `name=${lobbyObj.name}&team=${currentTeam}`;
-
-  await fetch(url, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: formData,
-  });
 };
 
 const handleInput = (e) => {
   if (currentTeam !== 0 && running) {
     const key = e.keyCode;
-    console.log(key);
 
     if (key === 32) {
-      console.log('sending post');
-      sendPost('/updateLobby');
+      const formData = `name=${lobbyObj.name}&team=${currentTeam}`;
+      const contentType = 'application/x-www-form-urlencoded';
+      sendPost('/updateLobby', contentType, formData);
     }
   }
 };
@@ -97,10 +100,8 @@ const init = () => {
   const joinButton = document.querySelector('#joinButton');
   const joinTeam = document.querySelector('#joinTeam');
   const joinText = document.querySelector('#joinText');
-  const url = window.location.href;
-  const lobbyName = url.split('=')[1];
 
-  sendGetJson(`/getLobbyObj?name=${lobbyName}`, initGame);
+  initGame();
 
   joinButton.addEventListener('click', () => {
     setTeam(joinTeam.value);
