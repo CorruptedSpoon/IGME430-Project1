@@ -6,6 +6,7 @@ let lobbyObj = {};
 let currentTeam = 0;
 let running = false;
 let updateInterval = null;
+let titleHasUnderscore = true;
 
 let word = ''; // the word that needs to be typed
 let input = ''; // the current input string that is being typed
@@ -147,6 +148,8 @@ const initGame = async () => {
   await update();
   updateInterval = setInterval(update, 100);
 
+  updateTitleInterval = setInterval(updateTitle, 700);
+
   const joinTeam = document.querySelector('#joinTeam');
   let selectHTML = '';
   const createOption = (team) => `<option value="${team}">${team}</option>`;
@@ -159,6 +162,17 @@ const setTeam = (teamName) => {
   if (lobbyObj.team1 === teamName) currentTeam = 1;
   else currentTeam = 2;
 };
+
+const updateTitle = () => {
+  const title = document.querySelector('#title');
+  if(titleHasUnderscore){
+    title.innerHTML = 'Type War';
+  }
+  else{
+    title.innerHTML = 'Type War_';
+  }
+  titleHasUnderscore = !titleHasUnderscore;
+}
 
 const init = () => {
   const joinButton = document.querySelector('#joinButton');

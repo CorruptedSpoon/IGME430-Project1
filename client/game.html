@@ -2,18 +2,56 @@
 <html lang="en">
 <head>
   <title>game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" typr="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
   <link rel="stylesheet" type="text/css" href="/style.css">
   <script src="./game.js"></script>
 </head>
 <body>
-    <section id="top">
-      <h1>Game</h1>
-      <br>
-      <h3 id="joinText">Join Team</h3>
-      <select id="joinTeam"></select>
-      <button id="joinButton" type="button">Join</button>
-    </section>
-    <section id="content">
-    </section>
+  <section id="header">
+
+    <div id="headerContainer" class="container">
+
+      <div class="row">
+
+        <div class="column">
+          <h1 id="title">Type War_</h1>
+        </div>
+
+        <div id="backColumn" class="column">
+          <a id="back" href="/">Back To Lobbys</a>
+        </div>
+
+        <div class="column column-60"></div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="top">
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="column column-33 column-offset-33">
+          <h3 id="joinText">Join a Team</h3>
+          <select id="joinTeam"></select>
+          <button class="button button-outline" id="joinButton" type="button">Join</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="content">
+  </section>
+  
 </body>
 </html>

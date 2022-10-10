@@ -1,3 +1,5 @@
+let titleHasUnderscore = true;
+
 const statusStruct = {
   200: 'Success',
   201: 'Created',
@@ -58,6 +60,17 @@ const createLobby = async (createForm) => {
   window.location.href = `./game?name=${nameField.value}`;
 };
 
+const updateTitle = () => {
+  const title = document.querySelector('#title');
+  if(titleHasUnderscore){
+    title.innerHTML = 'Type War';
+  }
+  else{
+    title.innerHTML = 'Type War_';
+  }
+  titleHasUnderscore = !titleHasUnderscore;
+}
+
 const init = () => {
   const createForm = document.querySelector('#createLobby');
   const refreshButton = document.querySelector('#refreshButton');
@@ -76,6 +89,8 @@ const init = () => {
       window.location.href = `./game?name=${lobbySelect.value}`;
     }
   });
+
+  updateTitleInterval = setInterval(updateTitle, 700);
 
   updateLobbys();
 };

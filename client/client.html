@@ -2,37 +2,100 @@
 <html lang="en">
 <head>
   <title>index</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" typr="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
   <link rel="stylesheet" type="text/css" href="/style.css">
   <script src="./client.js"></script>
 </head>
 <body>
-    <section id="top">
-      <h3>Create Lobby</h3>
-      <form id="createLobby" method="post">
-          <label for="name">Lobby Name: </label>
+  <section id="header">
+
+    <div id="headerContainer" class="container">
+
+      <div class="row">
+
+        <div class="column">
+          <h1 id="title">Type War_</h1>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="top">
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="column column-40 column-offset-10">
+          <h3>Create Lobby</h3>
+          <form id="createLobby" method="post">
+          <label for="name">Lobby Name</label>
           <input id = "nameField" type="text" name="name" />
-          <label for="team1">Team 1: </label>
+          <label for="team1">Team 1</label>
           <input id = "team1Field" type="text" name="team1" />
-          <label for="team2">Team 2: </label>
+          <label for="team2">Team 2</label>
           <input id = "team2Field" type="text" name="team2" />
-          <input type="submit" value="Create"/>
-      </form>
-      <br>
-      <h3>Join Lobby</h3>
-      <select id="joinLobby"></select>
-      <button id="refreshButton" type="button">Refresh</button>
-      <button id="joinButton" type="button">Join</button>
-    </section>
-      <section id="content">
-    </section>
-    <section id="instructions">
-      <p>
-        This app is a multiplayer game where you compete on teams in a race/tug of war contest.<br>
-        You can create a lobby with the form above, and it will automatically bring you to the game.<br>
-        You can also join a lobby or refresh the list of lobbys with the controls above.<br>
-        In the game, you can join a team with the controls, and then mash the space bar to score.<br>
-        Once team 1 or 2 reaches 100 or -100 score respectively, they win the game.
-      </p>
-    </section>
+          <input class="button button-outline" type="submit" value="Create"/>
+          </form>
+        </div>
+
+        <div class="column column-40">
+          <h3>Join Lobby</h3>
+          <label for="joinLobby">Lobby Name</label>
+          <select id="joinLobby" name="joinLobby"></select>
+          <button id="refreshButton" class="button button-outline" type="button">Refresh</button>
+          <button id="joinButton" class="button button-outline" type="button">Join</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section id="content">
+  </section>
+
+  <section id="instructions">
+
+    <div class="container">
+
+      <div class="row">
+
+        <div class="column column-60 column-offset-20">
+          <p>
+            This app is a team-based multiplayer game. Players must quickly type the words that
+            appear on the screen to gain points. A team wins by reaching the victory threshold.
+            You can create a lobby or join one that already exists using the controls above. 
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section id="footer">
+
+    <div id="footerContainer" class="container">
+
+      <div class="row">
+
+        <div class="column">
+          <h6 class="textCenter">Created by Van Edelman</h6>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
 </body>
 </html>
