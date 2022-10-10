@@ -29,3 +29,11 @@ html, body {
   padding-top: 30px;
   text-align: center;
 }
+
+.greenText {
+  color: #4bc172;
+}
+
+.redText {
+  color: #bc475b;
+}
