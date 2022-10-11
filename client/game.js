@@ -1,8 +1,7 @@
 // deployed from https://github.com/SacuL/RandomWordsAPI licensed under GNU General Public License v3.0
 const randWordApiUrl = 'https://obscure-savannah-88677.herokuapp.com/w?n=1';
 
-// holds the state data of the game lobby
-let lobbyObj = {};
+let lobbyObj = {}; // holds the state data of the game lobby
 let currentTeam = 0;
 let running = false;
 let updateInterval = null;
@@ -10,6 +9,10 @@ let titleHasUnderscore = true;
 
 let word = ''; // the word that needs to be typed
 let input = ''; // the current input string that is being typed
+
+let canvas = null;
+const markerRadius = 20; // width of the score marker in pixels
+const trackHeight = 4; // height of the track the marker will be aligned with
 
 // const statusStruct = {
 //   200: 'Success',
@@ -72,6 +75,33 @@ const inputDisplayHtml = () => {
   } return html + '</span></p>';
 };
 
+// draws a solid circle at the specified position
+const fillCircle = (ctx, color, x, y) => {
+  ctx.beginPath();
+  ctx.arc(x, y, markerRadius, 0, 2 * Math.PI, false);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+// draws the visual indicator of score to the canvas
+const draw = () => {
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const markerX = lobbyObj.score * (width / 2 - markerRadius) + width / 2;
+  const markerY = height / 2;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = 'white';
+
+  const startX = markerRadius;
+  const startY = height / 2 - trackHeight / 2;
+  const endX = width - markerRadius - startX;
+  const enxY = height / 2 + trackHeight / 2 - startY;
+  ctx.fillRect(startX, startY, endX, enxY);
+  fillCircle(ctx, "#db8787", markerX, markerY);
+};
+
 // adds info like word and input, as well as score to the HTML
 const display = () => {
   const content = document.querySelector('#content');
@@ -87,6 +117,8 @@ const display = () => {
     displayHtml += `${inputDisplayHtml()}`;
   }
   content.innerHTML = displayHtml;
+
+  draw();
 };
 
 // checks for a win based on score, ends the update loop
@@ -139,6 +171,8 @@ const update = async () => {
 
 // initializes lobbyObj, word, update loop, join team select
 const initGame = async () => {
+  canvas = document.querySelector('#canvas');
+  
   const url = window.location.href;
   lobbyObj.name = url.split('=')[1];
 
@@ -146,8 +180,8 @@ const initGame = async () => {
   word = (await randWordRes.json())[0];
 
   await update();
-  updateInterval = setInterval(update, 100);
 
+  updateInterval = setInterval(update, 100);
   updateTitleInterval = setInterval(updateTitle, 700);
 
   const joinTeam = document.querySelector('#joinTeam');
@@ -163,6 +197,7 @@ const setTeam = (teamName) => {
   else currentTeam = 2;
 };
 
+// animates the 'Type War_' logo
 const updateTitle = () => {
   const title = document.querySelector('#title');
   if(titleHasUnderscore){

@@ -28,6 +28,7 @@ const sendPost = async (url, contentType, body) => {
   return res;
 };
 
+// gets the names of all active lobbys and updates the lobby select
 const updateLobbys = async () => {
   const res = await sendGet('/getLobbyNames');
   const json = await res.json();
@@ -41,6 +42,8 @@ const updateLobbys = async () => {
   lobbySelect.innerHTML = selectHtml;
 };
 
+// generates params from the create lobby form and sends them to make a new lobby
+// redirects client to the game page
 const createLobby = async (createForm) => {
   const nameField = createForm.querySelector('#nameField');
   const team1Field = createForm.querySelector('#team1Field');
@@ -60,6 +63,7 @@ const createLobby = async (createForm) => {
   window.location.href = `./game?name=${nameField.value}`;
 };
 
+// animates the 'Type War_' logo
 const updateTitle = () => {
   const title = document.querySelector('#title');
   if(titleHasUnderscore){

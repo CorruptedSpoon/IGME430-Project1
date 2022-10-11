@@ -1,9 +1,10 @@
 const helper = require('./helper.js');
 
-const lobbys = {};
+const lobbys = {}; // holds all lobby objects
 
-const scoreCounterNum = 0.05;
+const scoreCounterNum = 0.05; // the amount to increment the score
 
+// helper function for createLobby
 const addLobby = (params) => {
   const lobby = {
     name: params.name,
@@ -14,6 +15,8 @@ const addLobby = (params) => {
   lobbys[params.name] = lobby;
 };
 
+// creates and adds a lobby to the lobbys obj based on params
+// returns an error if params are missing or if the lobby already exists
 const createLobby = (req, res, params) => {
   const responseJSON = {};
 
@@ -32,6 +35,8 @@ const createLobby = (req, res, params) => {
   return helper.respondJsonMeta(res, 201);
 };
 
+// returns an array containing the names of all lobbys
+// can return an empty array
 const getLobbyNames = (req, res) => {
   const responseJson = { lobbys: [] };
   const keys = Object.keys(lobbys);
@@ -42,6 +47,13 @@ const getLobbyNames = (req, res) => {
   return helper.respondJson(res, 200, responseJson);
 };
 
+// getLobbyNames will always succeed because it can return an empty array
+// so just return sucess
+const getLobbyNamesMeta = (req, res) => {
+  return helper.respondJsonMeta(res, 200);
+};
+
+// returns the object at params.name in lobbys or an error if it doesn't exist
 const getLobbyObj = (req, res, params) => {
   const responseJson = {};
   if (!lobbys[params.name]) {
@@ -51,17 +63,36 @@ const getLobbyObj = (req, res, params) => {
   } return helper.respondJson(res, 200, lobbys[params.name]);
 };
 
+const getLobbyObjMeta = (req, res, params) => {
+  if (!lobbys[params.name]) {
+    return helper.respondJsonMeta(res, 400);
+  } return helper.respondJsonMeta(res, 200);
+};
+
+// increments the score counter by a set amount
+// or an error if the team parameter is invalid
 const updateLobby = (req, res, params) => {
   if (params.team === '1') {
     lobbys[params.name].score += scoreCounterNum;
-  } else {
+    return helper.respondJsonMeta(res, 204);
+  }
+  else if(pararms.team === '2') {
     lobbys[params.name].score -= scoreCounterNum;
-  } return helper.respondJsonMeta(res, 200);
+    return helper.respondJsonMeta(res, 204);
+  }
+  else{
+    const responseJson = {};
+    responseJson.message = 'team parameter is not 1 or 2';
+    responseJson.id = 'invalidParams';
+    return helper.respondJson(res, 400, responseJson);
+  }
 };
 
 module.exports = {
   createLobby,
   getLobbyObj,
+  getLobbyObjMeta,
   getLobbyNames,
+  getLobbyNamesMeta,
   updateLobby,
 };

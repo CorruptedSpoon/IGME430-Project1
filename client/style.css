@@ -14,6 +14,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto Mono', monospace;
 }
 
+/* the downtick on selects in Milligram uses this svg, and I have to change the fill value here to match with the other colors */
 select {
   background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%23d6cdff" d="M0,0l6,8l6-8"/></svg>') center right no-repeat
 }
@@ -54,6 +55,11 @@ button:hover, .button:hover {
 button:active, .button:active {
   border-color: #efe8e146 !important;
   color: #efe8e146 !important;
+}
+
+canvas {
+  display: block;
+  width: 100%;
 }
 
 #headerContainer {

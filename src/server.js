@@ -32,12 +32,17 @@ const urlStruct = {
   GET: {
     '/': htmlHandler.getIndexHtml,
     '/style.css': htmlHandler.getCSS,
-    '/getLobbyObj': lobbyHandler.getLobbyObj,
-    '/getLobbyNames': lobbyHandler.getLobbyNames,
     '/game': htmlHandler.getGameHtml,
     '/client.js': htmlHandler.getClientJs,
     '/game.js': htmlHandler.getGameJs,
+    '/getLobbyObj': lobbyHandler.getLobbyObj,
+    '/getLobbyNames': lobbyHandler.getLobbyNames,
     notFound: jsonHandler.notFound,
+  },
+  HEAD: {
+    '/getLobbyObj': lobbyHandler.getLobbyObjMeta,
+    '/getLobbyNames': lobbyHandler.getLobbyNamesMeta,
+    notFound: jsonHandler.notFoundMeta,
   },
   POST: {
     '/createLobby': (req, res) => parseBody(req, res, lobbyHandler.createLobby),
