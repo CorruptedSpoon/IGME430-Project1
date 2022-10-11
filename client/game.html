@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>game</title>
+  <title>Type War</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
@@ -46,18 +46,40 @@
 
       </div>
 
+      <div class="row">
+
+        <div class="column column-33 column-offset-33">
+          <button hidden class="hidden button button-outline" id="startButton" type="button">Start</button>
+          <h3 id="go" class="hidden textCenter">TYPE!</h3>
+          <h3 id="waiting" class="hidden textCenter">waiting for host to start the game</h3>
+        </div>
+
+      </div>
+
     </div>
 
   </section>
 
-  <section>
+  <section id="gameDisplay">
     
     <div class="container">
 
       <div class="row">
 
-        <div class="column column-50 column-offset-25">
+        <div class="column column-25">
+          <h5 id="t1Name"></h5>
+          <h6 class="playersLabel">players</h6>
+          <p id="t1PlayersList" class="playersList"></p>
+        </div>
+
+        <div class="column column-50">
           <canvas id="canvas" width="1000" height="100"></canvas>
+        </div>
+
+        <div class="column column-25">
+          <h5 id="t2Name"></h5>
+          <h6 class="playersLabel">players</h6>
+          <p id="t2PlayersList" class="playersList"></p>
         </div>
 
       </div>

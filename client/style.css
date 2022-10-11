@@ -60,6 +60,7 @@ button:active, .button:active {
 canvas {
   display: block;
   width: 100%;
+  padding-top: 30px;
 }
 
 #headerContainer {
@@ -81,7 +82,6 @@ canvas {
 }
 
 #content {
-  margin-top: 100px;
   text-align: center;
 }
 
@@ -103,6 +103,23 @@ canvas {
   color: #efe8e177;
 }
 
+#t1Name, #t2Name {
+  text-align: center;
+}
+
+#gameDisplay {
+  padding-top: 100px;
+}
+
+.playersLabel {
+  text-align: center;
+  color: #d6cdff;
+}
+
+.playersList {
+  text-align: center;
+}
+
 .greenText {
   color: #4bc172;
 }
@@ -113,4 +130,8 @@ canvas {
 
 .textCenter {
   text-align: center;
+}
+
+.hidden {
+  display: none;
 }

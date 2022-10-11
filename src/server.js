@@ -46,7 +46,11 @@ const urlStruct = {
   },
   POST: {
     '/createLobby': (req, res) => parseBody(req, res, lobbyHandler.createLobby),
+    '/removeLobby': (req, res) => parseBody(req, res, lobbyHandler.removeLobby),
     '/updateLobby': (req, res) => parseBody(req, res, lobbyHandler.updateLobby),
+    '/addPlayer': (req, res) => parseBody(req, res, lobbyHandler.addPlayer),
+    '/removePlayer': (req, res) => parseBody(req, res, lobbyHandler.removePlayer),
+    '/startGame': (req, res) => parseBody(req, res, lobbyHandler.startGame),
   },
 };
 

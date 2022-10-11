@@ -1,24 +1,21 @@
 // deployed from https://github.com/SacuL/RandomWordsAPI licensed under GNU General Public License v3.0
 const randWordApiUrl = 'https://obscure-savannah-88677.herokuapp.com/w?n=1';
+const emojis = ['&#128515;', '&#128514;', '&#128513;', '&#128517;', '&#127774', '&#127773', '&#128056', '&#128053', '&#128047', '&#128125', '&#128519', '&#128523', '&#128525', '&#128526', '&#128540'];
 
 let lobbyObj = {}; // holds the state data of the game lobby
 let currentTeam = 0;
-let running = false;
 let updateInterval = null;
 let titleHasUnderscore = true;
+let gameStartUIUpdated = false;
 
 let word = ''; // the word that needs to be typed
 let input = ''; // the current input string that is being typed
+let t1Emojis = [];
+let t2Emojis = [];
 
 let canvas = null;
 const markerRadius = 20; // width of the score marker in pixels
 const trackHeight = 4; // height of the track the marker will be aligned with
-
-// const statusStruct = {
-//   200: 'Success',
-//   201: 'Created',
-//   400: 'Bad Request',
-// };
 
 const sendGet = async (url) => {
   const res = await fetch(url, {
@@ -88,7 +85,7 @@ const draw = () => {
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
-  const markerX = lobbyObj.score * (width / 2 - markerRadius) + width / 2;
+  const markerX = -lobbyObj.score * (width / 2 - markerRadius) + width / 2;
   const markerY = height / 2;
 
   ctx.clearRect(0, 0, width, height);
@@ -102,17 +99,50 @@ const draw = () => {
   fillCircle(ctx, "#db8787", markerX, markerY);
 };
 
-// adds info like word and input, as well as score to the HTML
+// displays all current game info as html and calls draw
 const display = () => {
+  // this stuff displays the team info such as name and number of players
+  const t1Name = document.querySelector('#t1Name');
+  const t1PlayersList = document.querySelector('#t1PlayersList');
+  const t2Name = document.querySelector('#t2Name');
+  const t2PlayersList = document.querySelector('#t2PlayersList');
+
+  t1Name.innerHTML = lobbyObj.team1;
+  t2Name.innerHTML = lobbyObj.team2;
+  
+  // returns an array of length numPlayers starting with elements from
+  // tEmojis and adding random elements from emojis if necessary
+  const setPlayerEmojis = (tEmojis, numPlayers) => {
+    let newTEmojis = [];
+    for(let i = 0; i < numPlayers; i++){
+      if(tEmojis[i]){
+        newTEmojis.push(tEmojis[i])
+      }
+      else{
+        newTEmojis.push(emojis[Math.floor(Math.random() * emojis.length)]);
+      }
+    }
+    return newTEmojis;
+  };
+  t1Emojis = setPlayerEmojis(t1Emojis, lobbyObj.t1NumPlayers);
+  t2Emojis = setPlayerEmojis(t2Emojis, lobbyObj.t2NumPlayers);
+  t1PlayersList.innerHTML = t1Emojis.join('');
+  t2PlayersList.innerHTML = t2Emojis.join('');
+
+  if(lobbyObj.running && !gameStartUIUpdated){
+    document.querySelector('#go').classList.remove('hidden');
+    document.querySelector('#waiting').classList.add('hidden');
+    gameStartUIUpdated = true;
+  }
+
+  // this displays the current word and input
   const content = document.querySelector('#content');
   let displayHtml = '';
   if (lobbyObj.score >= 1) {
-    displayHtml = 'Team 1 wins!';
+    displayHtml = `<h2>${lobbyObj.team1} wins!</h2>`;
   } else if (lobbyObj.score <= -1) {
-    displayHtml = 'Team 2 wins!';
-  } else {
-    displayHtml = '<h3>score (100 or -100 wins)</h3>';
-    displayHtml += `<p>${Math.floor(lobbyObj.score * 100)}</p>`;
+    displayHtml = `<h2>${lobbyObj.team2} wins!</h2>`;
+  } else if (lobbyObj.running) {
     displayHtml += `<h3>${word}<h3>`;
     displayHtml += `${inputDisplayHtml()}`;
   }
@@ -125,7 +155,11 @@ const display = () => {
 const checkForWin = () => {
   if (lobbyObj.score >= 1 || lobbyObj.score <= -1) {
     clearInterval(updateInterval);
-    running = false;
+    lobbyObj.running = false;
+
+    const formData = `name=${lobbyObj.name}`;
+    const contentType = 'application/x-www-form-urlencoded';
+    sendPost('/removeLobby', contentType, formData);
   }
 };
 
@@ -139,12 +173,14 @@ const checkInput = async () => {
     const randWordRes = await sendGet(randWordApiUrl);
     word = (await randWordRes.json())[0];
     input = '';
+
+    document.querySelector('#go').classList.add('hidden');
   }
 };
 
 // handles all keyboard inputs and updates input accordingly
 const handleInput = (e) => {
-  if (currentTeam !== 0 && running) {
+  if (currentTeam !== 0 && lobbyObj.running) {
     const key = e.keyCode;
     const keyChar = String.fromCharCode(key).toLowerCase();
 
@@ -192,9 +228,32 @@ const initGame = async () => {
   joinTeam.innerHTML = selectHTML;
 };
 
+// decrements the player count
+const onClientClose = () => {
+  const formData = `name=${lobbyObj.name}&team=${currentTeam}`;
+  const contentType = 'application/x-www-form-urlencoded';
+  sendPost('/removePlayer', contentType, formData);
+};
+
+// sets the currentTeam
+// calls addPlayer to increment the player count
+// sets up onbeforeunload handler
 const setTeam = (teamName) => {
   if (lobbyObj.team1 === teamName) currentTeam = 1;
   else currentTeam = 2;
+
+  if(lobbyObj.t1NumPlayers === 0 && lobbyObj.t2NumPlayers === 0){
+    document.querySelector('#startButton').classList.remove('hidden');
+  }
+  else{
+    document.querySelector('#waiting').classList.remove('hidden');
+  }
+
+  const formData = `name=${lobbyObj.name}&team=${currentTeam}`;
+  const contentType = 'application/x-www-form-urlencoded';
+  sendPost('/addPlayer', contentType, formData);
+
+  window.onbeforeunload = onClientClose;
 };
 
 // animates the 'Type War_' logo
@@ -213,6 +272,7 @@ const init = () => {
   const joinButton = document.querySelector('#joinButton');
   const joinTeam = document.querySelector('#joinTeam');
   const joinText = document.querySelector('#joinText');
+  const startButon = document.querySelector('#startButton');
 
   initGame();
 
@@ -221,7 +281,15 @@ const init = () => {
     joinButton.parentNode.removeChild(joinButton);
     joinTeam.parentNode.removeChild(joinTeam);
     joinText.parentNode.removeChild(joinText);
-    running = true;
+  });
+
+  startButon.addEventListener('click', () => {
+    const formData = `name=${lobbyObj.name}`;
+    const contentType = 'application/x-www-form-urlencoded';
+
+    startButon.parentNode.removeChild(startButon);
+
+    sendPost('/startGame', contentType, formData);
   });
 
   document.onkeydown = handleInput;

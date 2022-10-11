@@ -10,7 +10,10 @@ const addLobby = (params) => {
     name: params.name,
     team1: params.team1,
     team2: params.team2,
+    t1NumPlayers: 0,
+    t2NumPlayers: 0,
     score: 0,
+    running: false,
   };
   lobbys[params.name] = lobby;
 };
@@ -33,6 +36,25 @@ const createLobby = (req, res, params) => {
 
   addLobby(params);
   return helper.respondJsonMeta(res, 201);
+};
+
+// removes the lobby with the given name param after an amount of time
+// returns an error if the lobby doesn't exist
+const removeLobby = async (req, res, params) => {
+  if (lobbys[params.name]) {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
+
+    delete lobbys[params.name];
+    return helper.respondJsonMeta(res, 204);
+  }
+
+  const responseJson = {
+    message: 'lobby does not exist',
+    id: 'lobbyNotFound',
+  };
+  return helper.respondJson(res, 400, responseJson);
 };
 
 // returns an array containing the names of all lobbys
@@ -85,11 +107,61 @@ const updateLobby = (req, res, params) => {
   return helper.respondJson(res, 400, responseJson);
 };
 
+// increments the player count variable for a specific team
+const changePlayerCount = (res, params, numToAdd) => {
+  if (lobbys[params.name]) {
+    if (params.team === '1') {
+      lobbys[params.name].t1NumPlayers += numToAdd;
+      return helper.respondJsonMeta(res, 204);
+    }
+    if (params.team === '2') {
+      lobbys[params.name].t2NumPlayers += numToAdd;
+      return helper.respondJsonMeta(res, 204);
+    }
+
+    const responseJson = {
+      message: 'team parameter is not 1 or 2',
+      id: 'invalidTeamParam',
+    };
+    return helper.respondJson(res, 400, responseJson);
+  }
+
+  const responseJson = {
+    message: 'the lobby does not exist',
+    id: 'invalidNameParam',
+  };
+  return helper.respondJson(res, 400, responseJson);
+};
+
+const addPlayer = (req, res, params) => {
+  changePlayerCount(res, params, 1);
+};
+
+const removePlayer = (req, res, params) => {
+  changePlayerCount(res, params, -1);
+};
+
+const startGame = (req, res, params) => {
+  if (lobbys[params.name]) {
+    lobbys[params.name].running = true;
+    return helper.respondJsonMeta(res, 204);
+  }
+  const responseJson = {
+    message: 'the lobby does not exist',
+    id: 'invalidNameParam',
+  };
+  return helper.respondJson(res, 400, responseJson);
+};
+
 module.exports = {
   createLobby,
+  removeLobby,
   getLobbyObj,
   getLobbyObjMeta,
   getLobbyNames,
   getLobbyNamesMeta,
   updateLobby,
+  addPlayer,
+  removePlayer,
+  startGame,
 };
