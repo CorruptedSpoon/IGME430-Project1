@@ -2,7 +2,7 @@ const helper = require('./helper.js');
 
 const lobbys = {}; // holds all lobby objects
 
-const scoreCounterNum = 0.05; // the amount to increment the score
+const scoreCounterNum = 0.1; // the amount to increment the score
 
 // helper function for createLobby
 const addLobby = (params) => {
