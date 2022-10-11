@@ -49,9 +49,7 @@ const getLobbyNames = (req, res) => {
 
 // getLobbyNames will always succeed because it can return an empty array
 // so just return sucess
-const getLobbyNamesMeta = (req, res) => {
-  return helper.respondJsonMeta(res, 200);
-};
+const getLobbyNamesMeta = (req, res) => helper.respondJsonMeta(res, 200);
 
 // returns the object at params.name in lobbys or an error if it doesn't exist
 const getLobbyObj = (req, res, params) => {
@@ -76,16 +74,15 @@ const updateLobby = (req, res, params) => {
     lobbys[params.name].score += scoreCounterNum;
     return helper.respondJsonMeta(res, 204);
   }
-  else if(pararms.team === '2') {
+  if (params.team === '2') {
     lobbys[params.name].score -= scoreCounterNum;
     return helper.respondJsonMeta(res, 204);
   }
-  else{
-    const responseJson = {};
-    responseJson.message = 'team parameter is not 1 or 2';
-    responseJson.id = 'invalidParams';
-    return helper.respondJson(res, 400, responseJson);
-  }
+
+  const responseJson = {};
+  responseJson.message = 'team parameter is not 1 or 2';
+  responseJson.id = 'invalidParams';
+  return helper.respondJson(res, 400, responseJson);
 };
 
 module.exports = {
